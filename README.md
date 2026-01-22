@@ -31,8 +31,7 @@ implementation was a team effort across multiple languages.
 
 - docs/architecture.md: Agent decision framework
 - docs/yield_calculation.md: Mathematical formulation
-- 
-otebooks/01_simulation.ipynb: Python implementation with toy data
+- notebooks/01_simulation.ipynb: Python implementation with toy data
 - papers/ethglobal_summary.pdf: Project overview and recognition
 
 ## Tech Stack
@@ -42,8 +41,4 @@ otebooks/01_simulation.ipynb: Python implementation with toy data
 
 ## Status
 
-?? Work in progress - documenting economic logic from hackathon project
-
-## Contact
-
-briacsockalingum@gmail.com
+Work in progress - documenting economic logic from hackathon project
