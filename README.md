@@ -6,8 +6,8 @@ Economic analysis of optimal capital allocation across DeFi lending protocols.
 
 This repository documents the economic framework behind YIELD, an AI-powered cross-chain 
 yield optimizer that won showcase awards at:
-- ?? EthGlobal San Francisco 2024
-- ?? EthGlobal Cannes 2024
+- 🏆 EthGlobal San Francisco 2024
+- 🏆 EthGlobal Cannes 2024
 
 **Scope**: This repo focuses on the **economic model and decision logic** I designed, 
 implemented here in Python for research/pedagogical purposes. The original hackathon 
