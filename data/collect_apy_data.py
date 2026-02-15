@@ -260,7 +260,7 @@ def classify_stablecoin_type(asset: str) -> str:
         return 'Other'
 
 
-def save_comprehensive_dataset(df: pd.DataFrame, output_dir: str = 'data/raw'):
+def save_comprehensive_dataset(df: pd.DataFrame, output_dir: str = 'raw'):
     """Save timestamped and latest versions"""
     if df.empty:
         print("⚠️  No data to save")
@@ -441,7 +441,7 @@ def main():
     print(f"\n✅ Data collection complete!")
     print(f"   📊 Total records: {len(df_enriched):,}")
     print(f"   💾 Saved to: {saved_file}")
-    print(f"\n📁 Ready for analysis in: data/raw/defi_yields_latest.csv")
+    print(f"\n📁 Ready for analysis in: raw/defi_yields_latest.csv")
 
 
 if __name__ == '__main__':
