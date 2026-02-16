@@ -11,8 +11,14 @@ def build_panel_dataset():
     """Combine all daily snapshots into panel data"""
     
     # Load all snapshots
-    files = glob.glob('data/raw/defi_yields_*.csv')
-    files = [f for f in files if 'latest' not in f]  # Exclude 'latest'
+    script_dir = Path(__file__).parent
+    raw_data_dir = script_dir / 'raw'
+    processed_dir = script_dir / 'processed'
+    
+    # Load all snapshots
+    files = list(raw_data_dir.glob('defi_yields_*.csv'))
+    files = [f for f in files if 'latest' not in f.name]  # Exclude 'latest'
+
     
     if len(files) == 0:
         print("⚠️ No historical data yet. Run collect_apy_data.py daily.")
@@ -30,7 +36,9 @@ def build_panel_dataset():
     panel = panel.sort_values(['pool', 'date'])
     
     # Save processed panel
-    panel.to_csv('data/processed/yield_panel.csv', index=False)
+    processed_dir.mkdir(exist_ok=True)
+    panel.to_csv(processed_dir / 'yield_panel.csv', index=False)
+
     
     print(f"✓ Built panel with {len(panel)} observations")
     print(f"  Time span: {panel['date'].min()} to {panel['date'].max()}")
