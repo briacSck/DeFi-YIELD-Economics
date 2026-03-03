@@ -234,7 +234,7 @@ class CapitalAtRiskCalculator:
         top_car = self.portfolio.nlargest(10, 'car_total')
         ax1.barh(range(len(top_car)), top_car['car_total'], color='crimson', alpha=0.7)
         ax1.set_yticks(range(len(top_car)))
-        ax1.set_yticklabels([f"{p[:20]}" for p in top_car['protocol']], fontsize=9)
+        ax1.set_yticklabels([f"{p[:35]}" for p in top_car['protocol_name']], fontsize=9)
         ax1.set_xlabel('Capital at Risk ($)', fontsize=10)
         ax1.set_title('Top 10 Positions by CaR', fontsize=12, fontweight='bold')
         ax1.grid(axis='x', alpha=0.3)
