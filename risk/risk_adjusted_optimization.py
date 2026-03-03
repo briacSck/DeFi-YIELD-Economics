@@ -37,7 +37,14 @@ class RiskAdjustedOptimizer:
         # Objective: Maximize Sharpe (minimize negative Sharpe)
         def objective(weights):
             portfolio_return = np.dot(weights, df['sharpe_proxy'].values)
-            return -portfolio_return  # Minimize negative = maximize
+            
+            # Diversification penalty: penalize concentrated portfolios
+            # HHI (Herfindahl-Hirschman Index): sum of squared weights
+            concentration = np.sum(weights ** 2)
+            diversification_penalty = concentration * 10  # Scale factor
+    
+            return -(portfolio_return - diversification_penalty)  # Maximize return - penalty
+
         
         # Constraint: Portfolio CaR ≤ risk_budget
         def risk_constraint(weights):
@@ -52,7 +59,9 @@ class RiskAdjustedOptimizer:
         x0 = np.ones(n) / n
         
         # Bounds: 0 <= w_i <= 0.5 (max 50% in single protocol)
-        bounds = tuple((0, 0.5) for _ in range(n))
+        # Enforce minimum  (preferable for commercial use)
+        bounds = tuple((0.05, 0.25) for _ in range(n))  # Min 5%, Max 25% per position
+
         
         # Constraints
         constraints = [
