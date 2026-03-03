@@ -164,7 +164,7 @@ class ProtocolRiskScorer:
             carr = credit + duration + market + operational
             
             # Risk tier classification
-            if carr < 0.03:
+            if carr < 0.035:
                 tier = "A (Low Risk)"
             elif carr < 0.06:
                 tier = "B (Moderate Risk)"

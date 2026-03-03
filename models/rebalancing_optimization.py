@@ -15,7 +15,7 @@ class RebalancingSimulator:
         self.data_path = Path(data_path)
         self.df = None
         self.results = []
-        
+
     def load_data(self):
         """Load panel data and prepare for simulation"""
         self.df = pd.read_csv(self.data_path)
@@ -256,7 +256,7 @@ class RebalancingSimulator:
             'net_return_pct': net_return_pct,
             'daily_log': daily_log
         }
-    
+
     def run_simulation(self, deposit_sizes=[100, 500, 1000, 5000, 10000], 
                       holding_days=14, gas_costs={'L2': 0.50, 'L1': 5.00}):
         """Run all strategies across different deposit sizes and gas costs"""
