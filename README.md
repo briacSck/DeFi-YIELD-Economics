@@ -15,17 +15,25 @@ This repository explores whether optimized allocation strategies can make
 automated DeFi portfolio management economically viable for deposits <$500—
 a threshold relevant to financial inclusion in emerging markets.
 
-## Current Status: Data Collection & Initial Analysis
+## Current Status: Modeling & Risk Analysis
 
-**Completed (Feb 16, 2026)**:
+**Completed**:
+
 - ✅ Comprehensive yield data collection across 40+ protocols and 25+ chains
 - ✅ Initial landscape analysis showing APY distributions and risk-adjusted returns
 - ✅ Protocol categorization framework (tier, chain type, stablecoin backing)
+- ✅ ML yield forecasting models (ARIMA, XGBoost) — `models/yield_forecasting.py`
+- ✅ Rebalancing optimization under transaction costs — `models/rebalancing_optimization.py`
+- ✅ Protocol risk scoring (multi-factor) — `risk/protocol_scoring.py`
+- ✅ Capital-at-Risk (CaR) analysis across deposit sizes — `risk/capital_at_risk.py`
+- ✅ Liquidity coverage ratio modeling — `risk/liquidity_coverage.py`
+- ✅ Risk-adjusted portfolio optimization — `risk/risk_adjusted_optimization.py`
 
 **In Progress**:
-- [ ] ML Time-series yield forecasting models (ARIMA, LSTM, XGBoost)
-- [ ] Optimal rebalancing strategy under transaction costs
-- [ ] Backtesting across different deposit sizes
+
+- [ ] Adding a `main.py`script for the automating the complete RUN
+- [ ] Backtesting across deposit sizes ($100–$5,000)
+- [ ] Updated analysis notebook integrating forecasting + risk outputs
 
 ## Preliminary Findings
 
@@ -36,9 +44,11 @@ pools shows heterogeneous APY distributions across protocols, with risk-adjusted
 returns (Sharpe proxies) varying significantly by chain type and protocol maturity.*
 
 **Key observations from initial data**:
-- Market average APY: [To be updated after first collection run]
+
+- Market average APY: see [`results/forecasting_performance.csv`](results/forecasting_performance.csv) for per-protocol APY means and volatility
 - Cross-chain yield spread: L2 rollups vs. Ethereum mainnet comparison
-- Protocol efficiency: Risk-adjusted return rankings
+- Protocol efficiency: Risk-adjusted return rankings in [`results/protocol_risk_scores.csv`](results/protocol_risk_scores.csv)
+- Forecasting: ARIMA achieves up to 41% MAE improvement over naive baseline on stable protocols; performance degrades on high-volatility pools
 
 *Full analysis in: [`analysis/01_initial_yield_exploration.ipynb`](analysis/01_initial_yield_exploration.ipynb)*
 
@@ -54,21 +64,37 @@ Extending portfolio optimization under proportional transaction costs
 (Constantinides 1986; Davis & Norman 1990) to multi-protocol DeFi context 
 with discrete, non-convex transaction costs.
 
-### Planned Models
-1. **Forecasting**: ML Time-series prediction to reduce rebalancing frequency
-2. **Optimization**: CVaR-constrained allocation under gas cost constraints  
-3. **Backtesting**: Performance across deposit sizes ($100-$5000)
+### Models
+
+1. **Forecasting** — ARIMA and XGBoost time-series models to predict APY and reduce unnecessary rebalancing frequency (`models/yield_forecasting.py`)
+2. **Optimization** — CVaR-constrained allocation under gas cost constraints with concentration penalties (`models/rebalancing_optimization.py`)
+3. **Risk Framework** — Multi-factor protocol scoring, CaR, and liquidity coverage analysis (`risk/`)
+4. **Backtesting** — Performance simulation across deposit sizes ($100–$5,000) *(in progress)*
+
 
 ## Repository Structure
 ```
 /DeFi-YIELD-Economics
 ├── /data
-│ ├── /raw # Daily APY snapshots from DeFiLlama
+│ └── /raw # Daily APY snapshots from DeFiLlama
+│ └── /processed # Cleaned & merged 
+│ └── build_timeseries.py
 │ └── collect_apy_data.py
 ├── /analysis
 │ └── 01_initial_yield_exploration.ipynb
+├── /models
+│ ├── yield_forecasting.py # ARIMA & XGBoost APY forecasting
+│ └── rebalancing_optimization.py # CVaR-constrained rebalancing optimizer
+├── /risk
+│ ├── protocol_scoring.py # Multi-factor protocol risk scores
+│ ├── capital_at_risk.py # CaR by deposit size
+│ ├── liquidity_coverage.py # Liquidity coverage ratio modeling
+│ └── risk_adjusted_optimization.py # Risk-weighted allocation
+├── /outputs # Timestamped analysis plots (CaR, etc.)
 ├── /results
-│ └── /figures
+│ ├── forecasting_performance.csv # ARIMA & XGBoost evaluation metrics
+│ └── protocol_risk_scores.csv # Scored protocol universe
+├── requirements.txt
 └── README.md
 ```
 
@@ -81,8 +107,20 @@ pip install -r requirements.txt
 # Collect current market data
 python data/collect_apy_data.py
 
-# Run analysis
+# Run initial yield exploration
 jupyter notebook analysis/01_initial_yield_exploration.ipynb
+
+# Run ML forecasting models
+python models/yield_forecasting.py
+
+# Run rebalancing optimization
+python models/rebalancing_optimization.py
+
+# Run risk analysis suite
+python risk/protocol_scoring.py
+python risk/capital_at_risk.py       # outputs saved to /outputs
+python risk/liquidity_coverage.py
+python risk/risk_adjusted_optimization.py
 ```
 
 ## Theoretical Context
@@ -97,6 +135,9 @@ Detailed literature review to be added as analysis progresses.
 Findings will inform mechanism design for accessible DeFi wealth management
 platforms. Product development considerations tracked separately.
 
+
+***
+
 ### Status:
-Early-stage research & Product development (Feb 2026).
-Data infrastructure complete; rigorous forecasting models in development (first iterations & prototypes complete).
+
+Active research & product development (Mar 2026). Data pipeline, ML forecasting models, risk scoring, and rebalancing optimization are fully implemented with initial results. Backtesting and extended analysis notebook in progress.
