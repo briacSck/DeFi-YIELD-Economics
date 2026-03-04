@@ -376,13 +376,12 @@ def calculate_portfolio_car(protocol_scores):
         Capital-at-risk results at the portfolio level.
     """
     from pathlib import Path
-    Path("risk").mkdir(exist_ok=True)
+    Path("results").mkdir(exist_ok=True)
+    protocol_scores.to_csv("results/protocol_risk_scores.csv", index=False)
 
-    # Optional: persist inputs for debugging/inspection
-    protocol_scores.to_csv("risk/protocol_scores.csv", index=False)
-
-    calculator = CapitalAtRiskCalculator(protocol_scores)
-    return calculator.generate_report()
+    calculator = CapitalAtRiskCalculator()
+    calculator.generate_report()
+    return calculator.portfolio
 
 if __name__ == '__main__':
     main()

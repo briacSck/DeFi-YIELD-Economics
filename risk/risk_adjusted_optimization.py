@@ -137,13 +137,9 @@ def optimize_with_calm_constraints(
     car_results.to_csv("risk/car_results_input.csv", index=False)
     lcr_results.to_csv("risk/lcr_results_input.csv", index=False)
 
-    optimizer = RiskAdjustedOptimizer(
-        forecasts=forecasts,
-        car_results=car_results,
-        lcr_results=lcr_results,
-        risk_aversion=risk_aversion,
-    )
-    return optimizer.run()
+    risk_budget = 0.15 / risk_aversion
+    optimizer = RiskAdjustedOptimizer(risk_budget=risk_budget)
+    return optimizer.optimize_allocation()
 
 
 if __name__ == '__main__':

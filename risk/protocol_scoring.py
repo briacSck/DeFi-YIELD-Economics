@@ -278,7 +278,9 @@ def score_protocols(panel: pd.DataFrame) -> pd.DataFrame:
         DataFrame of protocol risk scores.
     """
     scorer = ProtocolRiskScorer(panel)
-    return scorer.score_all_protocols()
+    scores = scorer.score_all_protocols()
+    scorer.save_scores(scores)   # writes results/protocol_risk_scores.csv
+    return scores
 
 
 if __name__ == '__main__':

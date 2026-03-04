@@ -268,8 +268,9 @@ def run_forecasting_suite(panel, skip_lstm: bool = False):
     Path("data/processed").mkdir(parents=True, exist_ok=True)
     panel.to_csv("data/processed/yield_panel.csv", index=False)
 
-    forecaster = YieldForecaster(panel, skip_lstm=skip_lstm)
-    return forecaster.run()
+    forecaster = YieldForecaster(data_path="data/processed/yield_panel.csv")
+    forecaster.load_data()
+    return forecaster.run_evaluation()
 
 
 if __name__ == '__main__':
