@@ -31,7 +31,7 @@ a threshold relevant to financial inclusion in emerging markets.
 
 **In Progress**:
 
-- [ ] Adding a `main.py`script for the automating the complete RUN
+- [x] Adding a `main.py` script for automating the complete RUN
 - [ ] Backtesting across deposit sizes ($100–$5,000)
 - [ ] Updated analysis notebook integrating forecasting + risk outputs
 
@@ -75,6 +75,8 @@ with discrete, non-convex transaction costs.
 ## Repository Structure
 ```
 /DeFi-YIELD-Economics
+├── /raw
+│ └── ... # Unstructured exports (e.g. protocol name mapping, intermediate dumps)
 ├── /data
 │ └── /raw # Daily APY snapshots from DeFiLlama
 │ └── /processed # Cleaned & merged 
@@ -94,6 +96,7 @@ with discrete, non-convex transaction costs.
 ├── /results
 │ ├── forecasting_performance.csv # ARIMA & XGBoost evaluation metrics
 │ └── protocol_risk_scores.csv # Scored protocol universe
+├── main.py # Orchestrates complete RUN of all modules
 ├── requirements.txt
 └── README.md
 ```
@@ -121,6 +124,9 @@ python risk/protocol_scoring.py
 python risk/capital_at_risk.py       # outputs saved to /outputs
 python risk/liquidity_coverage.py
 python risk/risk_adjusted_optimization.py
+
+# End-to-end run (data collection → modeling → risk analysis)
+python main.py
 ```
 
 ## Theoretical Context
