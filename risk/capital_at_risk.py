@@ -356,7 +356,33 @@ def main():
     print("\n" + "="*70)
     print("ANALYSIS COMPLETE")
     print("="*70)
-    
+
+
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+def calculate_portfolio_car(protocol_scores):
+    """
+    Public wrapper used by main.py for capital-at-risk analysis.
+
+    Parameters
+    ----------
+    protocol_scores : pd.DataFrame
+        Protocol-level risk scores, as returned by score_protocols().
+
+    Returns
+    -------
+    pd.DataFrame
+        Capital-at-risk results at the portfolio level.
+    """
+    from pathlib import Path
+    Path("risk").mkdir(exist_ok=True)
+
+    # Optional: persist inputs for debugging/inspection
+    protocol_scores.to_csv("risk/protocol_scores.csv", index=False)
+
+    calculator = CapitalAtRiskCalculator(protocol_scores)
+    return calculator.generate_report()
 
 if __name__ == '__main__':
     main()

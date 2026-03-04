@@ -331,6 +331,46 @@ class RebalancingSimulator:
         for deposit in sorted(results_df['deposit'].unique()):
             deposit_results = results_df
 
+
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+def run_backtests(optimal_alloc, panel, deposit_sizes=None):
+    """
+    Public wrapper used by main.py for the rebalancing backtests.
+
+    Parameters
+    ----------
+    optimal_alloc : pd.DataFrame
+        Output from optimize_with_calm_constraints(), with target allocations.
+        (Currently unused in this simulator-based backtest.)
+    panel : pd.DataFrame
+        Full panel/timeseries dataset. (Currently unused; simulator reads CSV.)
+    deposit_sizes : list[float], optional
+        Deposit sizes to simulate. If None, use the module's default set.
+
+    Returns
+    -------
+    pd.DataFrame
+        Backtest results across all deposit sizes.
+    """
+    from pathlib import Path
+    Path("data/processed").mkdir(parents=True, exist_ok=True)
+    panel.to_csv("data/processed/yield_panel.csv", index=False)
+
+    if deposit_sizes is None:
+        deposit_sizes = [100, 500, 1000, 5000, 10000]
+
+    sim = RebalancingSimulator()
+    sim.load_data()
+    results_df, _ = sim.run_simulation(
+        deposit_sizes=deposit_sizes,
+        holding_days=14,
+        gas_costs={"L2": 0.50, "L1": 5.00},
+    )
+    return results_df
+
+
 if __name__ == "__main__":
     sim = RebalancingSimulator()
     sim.load_data()
@@ -339,4 +379,4 @@ if __name__ == "__main__":
         holding_days=14,
         gas_costs={"L2": 0.50, "L1": 5.00},
     )
-print(results_df.head())
+    print(results_df.head())

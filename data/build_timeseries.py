@@ -46,5 +46,27 @@ def build_panel_dataset():
     
     return panel
 
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+def build_timeseries():
+    """
+    Wrapper function for the main pipeline orchestrator (main.py).
+    Calls the existing build_panel_dataset(), saves panel_latest.csv, and
+    returns the DataFrame.
+    """
+    panel = build_panel_dataset()
+    print(f"✓ Built panel with {len(panel)} observations")
+    print(f"  Time span: {panel['date'].min()} to {panel['date'].max()}")
+    print(f"  Unique pools: {panel['pool'].nunique()}")
+
+    out_path = Path("data") / "panel_latest.csv"
+    out_path.parent.mkdir(exist_ok=True)
+    panel.to_csv(out_path, index=False)
+    print(f"💾 Saved panel to: {out_path}")
+
+    return panel
+
+
 if __name__ == '__main__':
     build_panel_dataset()

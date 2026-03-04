@@ -406,43 +406,36 @@ def analyze_market_landscape(df: pd.DataFrame):
     
     print("\n" + "="*80)
 
-
 # ============================================================================
-# MAIN
+# MAIN / PUBLIC API
 # ============================================================================
 
-def main():
-    """Execute data collection"""
+def collect_apy_data() -> pd.DataFrame:
+    """
+    Public entry point called by the pipeline orchestrator (main.py).
+    Returns the enriched DataFrame so downstream stages can use it directly.
+    """
     print("\n🔬 Comprehensive DeFi Stablecoin Yield Research")
     print(f"⏰ Collection time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
-    # Fetch all data
+
     all_pools = fetch_defillama_pools()
     if not all_pools:
         print("❌ Data fetch failed")
-        return
-    
-    # Filter for stablecoin lending
+        return pd.DataFrame()
+
     df_filtered = filter_stablecoin_lending_pools(all_pools)
     if df_filtered.empty:
         print("❌ No stablecoin lending pools found")
-        return
-    
-    # Enrich with computed metrics
+        return pd.DataFrame()
+
     df_enriched = enrich_data(df_filtered)
-    
-    # Save datasets
-    saved_file = save_comprehensive_dataset(df_enriched)
-    
-    # Analyze
+    save_comprehensive_dataset(df_enriched)
     analyze_market_landscape(df_enriched)
-    
-    # Summary
-    print(f"\n✅ Data collection complete!")
-    print(f"   📊 Total records: {len(df_enriched):,}")
-    print(f"   💾 Saved to: {saved_file}")
-    print(f"\n📁 Ready for analysis in: raw/defi_yields_latest.csv")
+
+    print(f"\n✅ Data collection complete! ({len(df_enriched):,} records)")
+    return df_enriched
 
 
 if __name__ == '__main__':
-    main()
+    # Allows running this file directly for standalone testing
+    collect_apy_data()

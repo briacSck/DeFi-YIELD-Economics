@@ -80,5 +80,27 @@ def main():
     analyzer = LiquidityCoverageAnalyzer()
     analyzer.calculate_lcr()
 
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+def calculate_funding_gap(panel):
+    """
+    Public wrapper used by main.py for liquidity coverage / funding gap analysis.
+
+    Parameters
+    ----------
+    panel : pd.DataFrame
+        Protocol-level panel/timeseries data (same panel passed to score_protocols).
+
+    Returns
+    -------
+    pd.DataFrame
+        Liquidity coverage / funding gap results.
+    """
+    panel.to_csv("data/panel_latest.csv", index=False)
+    analyzer = LiquidityCoverageAnalyzer()
+    return analyzer.calculate_lcr()
+    
+
 if __name__ == '__main__':
     main()

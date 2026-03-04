@@ -240,5 +240,37 @@ def main():
     
     return results
 
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+
+def run_forecasting_suite(panel, skip_lstm: bool = False):
+    """
+    Public wrapper used by main.py for the full yield forecasting stage.
+
+    Parameters
+    ----------
+    panel : pd.DataFrame
+        Panel/timeseries dataset with protocol-level yields.
+    skip_lstm : bool, optional
+        If True, skip slow LSTM training and run only faster models.
+
+    Returns
+    -------
+    pd.DataFrame
+        Forecast results for all models/horizons used in the pipeline.
+    """
+    from pathlib import Path
+    Path("data/processed").mkdir(parents=True, exist_ok=True)
+    panel.to_csv("data/processed/yield_panel.csv", index=False)
+
+    forecaster = YieldForecaster(panel, skip_lstm=skip_lstm)
+    return forecaster.run()
+
+
 if __name__ == '__main__':
     results = main()

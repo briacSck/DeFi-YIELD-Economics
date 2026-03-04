@@ -8,33 +8,36 @@ import numpy as np
 from pathlib import Path
 
 class ProtocolRiskScorer:
-    """Assess risk profiles using available metadata and computed features"""
-    
     def __init__(self, data_path=None):
-        if data_path is None:
-            script_dir = Path(__file__).parent.parent
-            # Use raw data which has richer metadata
-            data_path = script_dir / 'data' / 'raw' / 'defi_yields_latest.csv'
-        
-        self.data_path = Path(data_path)
-        self.df = None
+        if isinstance(data_path, (pd.DataFrame, pd.Series)):
+            self.df = data_path.copy()
+            self.data_path = None
+        else:
+            if data_path is None:
+                data_path = "data/panel_latest.csv"
+            self.data_path = Path(data_path)
+            self.df = None
         self.risk_scores = {}
         
     def load_data(self):
         """Load protocol data with metadata"""
+        # If data was passed directly as a DataFrame, skip file loading
+        if self.df is not None:
+            self.apy_col = 'apy_base' if 'apy_base' in self.df.columns else 'apy_total'
+            print(f"✓ Using in-memory DataFrame: {self.df['pool'].nunique()} pools")
+            return self
+
+        # File-based path
         if not self.data_path.exists():
             raise FileNotFoundError(f"Data file not found: {self.data_path}")
-        
+
         self.df = pd.read_csv(self.data_path)
         self.df['date'] = pd.to_datetime(self.df['date'])
-        
-        # Use correct column name
         self.apy_col = 'apy_base' if 'apy_base' in self.df.columns else 'apy_total'
-        
+
         print(f"✓ Loaded data for {self.df['pool'].nunique()} protocols")
         print(f"  Columns available: {len(self.df.columns)}")
         print(f"  Using APY column: {self.apy_col}")
-        
         return self
     
     def calculate_credit_risk(self, protocol_id):
@@ -255,6 +258,28 @@ def main():
     scorer.save_scores(scores)
     
     return scores
+
+
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+def score_protocols(panel: pd.DataFrame) -> pd.DataFrame:
+    """
+    Public wrapper used by main.py.
+
+    Parameters
+    ----------
+    panel : pd.DataFrame
+        Protocol-level panel/timeseries data.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame of protocol risk scores.
+    """
+    scorer = ProtocolRiskScorer(panel)
+    return scorer.score_all_protocols()
+
 
 if __name__ == '__main__':
     scores = main()

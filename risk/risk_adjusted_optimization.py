@@ -99,5 +99,52 @@ def main():
     optimizer = RiskAdjustedOptimizer(risk_budget=0.15)
     optimizer.optimize_allocation(target_protocols=20)
 
+
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+# ============================================================================
+# MAIN / PUBLIC API
+# ============================================================================
+def optimize_with_calm_constraints(
+    forecasts,
+    car_results,
+    lcr_results,
+    risk_aversion: float = 1.0,
+):
+    """
+    Public wrapper used by main.py for risk‑adjusted CALM optimization.
+
+    Parameters
+    ----------
+    forecasts : pd.DataFrame
+        Output from run_forecasting_suite().
+    car_results : pd.DataFrame
+        Capital-at-risk results from calculate_portfolio_car().
+    lcr_results : pd.DataFrame
+        Liquidity coverage / funding gap results from calculate_funding_gap().
+    risk_aversion : float, optional
+        Global risk-aversion parameter for the optimizer.
+
+    Returns
+    -------
+    pd.DataFrame
+        Optimal portfolio allocation.
+    """
+    from pathlib import Path
+    Path("risk").mkdir(exist_ok=True)
+    forecasts.to_csv("risk/forecasts_input.csv", index=False)
+    car_results.to_csv("risk/car_results_input.csv", index=False)
+    lcr_results.to_csv("risk/lcr_results_input.csv", index=False)
+
+    optimizer = RiskAdjustedOptimizer(
+        forecasts=forecasts,
+        car_results=car_results,
+        lcr_results=lcr_results,
+        risk_aversion=risk_aversion,
+    )
+    return optimizer.run()
+
+
 if __name__ == '__main__':
     main()
