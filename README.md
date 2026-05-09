@@ -15,7 +15,7 @@ This repository explores whether optimized allocation strategies can make
 automated DeFi portfolio management economically viable for deposits <$500—
 a threshold relevant to financial inclusion in emerging markets.
 
-## Current Status: Modeling & Risk Analysis
+## Current Status: Full Pipeline Implemented
 
 **Completed**:
 
@@ -28,12 +28,9 @@ a threshold relevant to financial inclusion in emerging markets.
 - ✅ Capital-at-Risk (CaR) analysis across deposit sizes — `risk/capital_at_risk.py`
 - ✅ Liquidity coverage ratio modeling — `risk/liquidity_coverage.py`
 - ✅ Risk-adjusted portfolio optimization — `risk/risk_adjusted_optimization.py`
-
-**In Progress**:
-
-- [x] Adding a `main.py` script for automating the complete RUN
-- [ ] Backtesting across deposit sizes ($100–$5,000)
-- [ ] Updated analysis notebook integrating forecasting + risk outputs
+- ✅ End-to-end pipeline orchestrator (`main.py`) — one command runs all stages
+- ✅ Backtesting across deposit sizes ($100–$10,000) with L1/L2 gas comparison
+- ✅ Results interpretation notebook — `analysis/02_results_interpretation.ipynb`
 
 ## Preliminary Findings
 
@@ -75,28 +72,35 @@ with discrete, non-convex transaction costs.
 ## Repository Structure
 ```
 /DeFi-YIELD-Economics
-├── /raw
-│ └── ... # Unstructured exports (e.g. protocol name mapping, intermediate dumps)
 ├── /data
-│ └── /raw # Daily APY snapshots from DeFiLlama
-│ └── /processed # Cleaned & merged 
-│ └── build_timeseries.py
-│ └── collect_apy_data.py
+│   ├── /raw                          # Daily APY snapshots from DeFiLlama
+│   ├── /processed
+│   │   └── yield_panel.csv           # Panel written before forecasting & backtest
+│   ├── panel_latest.csv              # Latest merged panel (written by build_timeseries)
+│   ├── build_timeseries.py
+│   └── collect_apy_data.py
 ├── /analysis
-│ └── 01_initial_yield_exploration.ipynb
+│   ├── 01_initial_yield_exploration.ipynb
+│   └── 02_results_interpretation.ipynb   # Allocation, backtest & forecast visualizations
 ├── /models
-│ ├── yield_forecasting.py # ARIMA & XGBoost APY forecasting
-│ └── rebalancing_optimization.py # CVaR-constrained rebalancing optimizer
+│   ├── yield_forecasting.py          # ARIMA & XGBoost APY forecasting
+│   └── rebalancing_optimization.py   # CVaR-constrained rebalancing optimizer
 ├── /risk
-│ ├── protocol_scoring.py # Multi-factor protocol risk scores
-│ ├── capital_at_risk.py # CaR by deposit size
-│ ├── liquidity_coverage.py # Liquidity coverage ratio modeling
-│ └── risk_adjusted_optimization.py # Risk-weighted allocation
-├── /outputs # Timestamped analysis plots (CaR, etc.)
+│   ├── protocol_scoring.py           # Multi-factor protocol risk scores
+│   ├── capital_at_risk.py            # CaR by deposit size
+│   ├── liquidity_coverage.py         # Liquidity coverage ratio modeling
+│   ├── risk_adjusted_optimization.py # Risk-weighted CALM allocation
+│   ├── optimal_allocation.csv        # Portfolio weights output
+│   ├── car_analysis_results.csv      # Capital-at-Risk output
+│   └── liquidity_coverage_results.csv
+├── /outputs
+│   ├── backtest_results.csv          # Strategy × deposit backtest results
+│   └── forecast_results.csv          # ARIMA & XGBoost evaluation metrics
 ├── /results
-│ ├── forecasting_performance.csv # ARIMA & XGBoost evaluation metrics
-│ └── protocol_risk_scores.csv # Scored protocol universe
-├── main.py # Orchestrates complete RUN of all modules
+│   ├── /figures                      # All notebook-generated figures (PNG)
+│   ├── forecasting_performance.csv
+│   └── protocol_risk_scores.csv
+├── main.py                           # Orchestrates the complete pipeline
 ├── requirements.txt
 └── README.md
 ```
@@ -107,27 +111,21 @@ with discrete, non-convex transaction costs.
 # Install dependencies
 pip install -r requirements.txt
 
-# Collect current market data
-python data/collect_apy_data.py
-
-# Run initial yield exploration
-jupyter notebook analysis/01_initial_yield_exploration.ipynb
-
-# Run ML forecasting models
-python models/yield_forecasting.py
-
-# Run rebalancing optimization
-python models/rebalancing_optimization.py
-
-# Run risk analysis suite
-python risk/protocol_scoring.py
-python risk/capital_at_risk.py       # outputs saved to /outputs
-python risk/liquidity_coverage.py
-python risk/risk_adjusted_optimization.py
-
-# End-to-end run (data collection → modeling → risk analysis)
+# Full pipeline: data collection → risk scoring → forecasting → optimization → backtest
 python main.py
+
+# Skip live data collection (use last collected snapshot)
+python main.py --no-collect
+
+# Skip slow LSTM training for a faster run
+python main.py --skip-lstm
+
+# Explore results in the analysis notebooks
+jupyter notebook analysis/01_initial_yield_exploration.ipynb
+jupyter notebook analysis/02_results_interpretation.ipynb
 ```
+
+Outputs are written to `outputs/` (backtest & forecast CSVs), `risk/` (allocation & CaR CSVs), `results/` (protocol scores), and `results/figures/` (all notebook figures).
 
 ## Theoretical Context
 This work relates to:
@@ -146,4 +144,4 @@ platforms. Product development considerations tracked separately.
 
 ### Status:
 
-Active research & product development (Mar 2026). Data pipeline, ML forecasting models, risk scoring, and rebalancing optimization are fully implemented with initial results. Backtesting and extended analysis notebook in progress.
+Active research (May 2026). End-to-end pipeline fully implemented: data collection, risk scoring, yield forecasting, portfolio optimization, and rebalancing backtest across deposit sizes. Results in `/outputs` and `/risk`; interpretation in `analysis/02_results_interpretation.ipynb`.

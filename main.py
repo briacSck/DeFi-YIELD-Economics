@@ -16,6 +16,8 @@ import argparse
 import logging
 from pathlib import Path
 
+import pandas as pd
+
 from data.collect_apy_data import collect_apy_data
 from data.build_timeseries import build_timeseries
 from risk.protocol_scoring import score_protocols
@@ -34,13 +36,20 @@ def run_pipeline(
     skip_lstm: bool = False,      # LSTM is slow; skip for quick runs
 ):
     log.info("=== DeFi YIELD Economics Pipeline ===")
+    Path("outputs").mkdir(exist_ok=True)
+    Path("results").mkdir(exist_ok=True)
+    Path("results/figures").mkdir(parents=True, exist_ok=True)
+    Path("risk").mkdir(exist_ok=True)
 
     # --- Stage 1: Data ---
     if collect_fresh:
         log.info("Stage 1a: Collecting APY data from DeFiLlama...")
         collect_apy_data()
-    log.info("Stage 1b: Building panel dataset...")
-    panel = build_timeseries()
+        log.info("Stage 1b: Building panel dataset...")
+        panel = build_timeseries()
+    else:
+        log.info("Stage 1: Loading pre-built panel from disk...")
+        panel = pd.read_csv("data/panel_latest.csv")
 
     # --- Stage 2: Risk Scoring ---
     log.info("Stage 2a: Scoring protocols (CaR, credit, operational)...")
